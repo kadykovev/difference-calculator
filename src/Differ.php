@@ -2,6 +2,9 @@
 
 namespace Differ\Differ;
 
+use function Functional\reduce_left;
+use function Functional\map;
+
 function genDiff(string $firstFile, string $secondFile)
 {
     $firstFilePath = realpath($firstFile);
@@ -9,22 +12,29 @@ function genDiff(string $firstFile, string $secondFile)
 
     $firstFileContent = file_get_contents($firstFilePath);
     $secondFileContent = file_get_contents($secondFilePath);
-    //print_r(json_decode($firstFileContent, true));
-    //print_r(json_decode($secondFileContent, true));
 
     $firstFileArray = json_decode($firstFileContent, true);
     $secondFileArray = json_decode($secondFileContent, true);
 
-    $firstFileDiff = array_map(function ($key, $value) use ($secondFileArray) {
-        $valueAsString = $value === true ? "true" : ($value === false ? "false" : $value);
-        if (array_key_exists($key, $secondFileArray)) {
-            return $value === $secondFileArray[$key] ? "{$key}: {$valueAsString}" : "- {$key}: {$valueAsString}";
-        } else {
-            return "- {$key}: {$valueAsString}";
-        }
-    }, array_keys($firstFileArray), $firstFileArray);
+    $mergedArrays = array_merge($firstFileArray, $secondFileArray);
+    ksort($mergedArrays);
 
-    print_r($firstFileDiff);
-    print_r(strval(false));
-    //echo "dsgfdb";
+    $result = map($mergedArrays, function ($value, $key) use ($firstFileArray, $secondFileArray) {
+        if (array_key_exists($key, $secondFileArray)) {
+            if (array_key_exists($key, $firstFileArray)) {
+                return $value === $firstFileArray[$key] ? "    {$key}: " . toString($value) : "  - {$key}: " . toString($firstFileArray[$key]) . "\n  + {$key}: " . toString($value);
+            } else {
+                return "  + {$key}: " . toString($value);
+            }
+        } else {
+            return "  - {$key}: " . toString($value);
+        }
+    });
+
+    return "{\n" . implode("\n", $result) . "\n}";
+}
+
+function toString($value): string
+{
+    return $value === true ? "true" : ($value === false ? "false" : (string) $value);
 }
