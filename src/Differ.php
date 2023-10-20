@@ -2,9 +2,6 @@
 
 namespace Differ\Differ;
 
-use function Functional\reduce_left;
-use function Functional\map;
-
 function genDiff(string $firstFile, string $secondFile)
 {
     $firstFilePath = realpath($firstFile);
@@ -16,25 +13,30 @@ function genDiff(string $firstFile, string $secondFile)
     $firstFileArray = json_decode($firstFileContent, true);
     $secondFileArray = json_decode($secondFileContent, true);
 
-    $mergedArrays = array_merge($firstFileArray, $secondFileArray);
-    ksort($mergedArrays);
+    $keys = array_unique(array_merge(array_keys($firstFileArray), array_keys($secondFileArray)));
+    sort($keys);
 
-    $result = map($mergedArrays, function ($value, $key) use ($firstFileArray, $secondFileArray) {
-        if (array_key_exists($key, $secondFileArray)) {
-            if (array_key_exists($key, $firstFileArray)) {
-                return $value === $firstFileArray[$key] ? "    {$key}: " . toString($value) : "  - {$key}: " . toString($firstFileArray[$key]) . "\n  + {$key}: " . toString($value);
-            } else {
-                return "  + {$key}: " . toString($value);
-            }
-        } else {
-            return "  - {$key}: " . toString($value);
-        }
-    });
+    $result = array_map(function ($key) use ($firstFileArray, $secondFileArray) {
+        return getDiff($key, $firstFileArray, $secondFileArray);
+    }, $keys);
 
-    return "{\n" . implode("\n", $result) . "\n}";
+    return "{\n" . implode("\n", $result) . "\n}\n";
 }
 
 function toString($value): string
 {
     return $value === true ? "true" : ($value === false ? "false" : (string) $value);
+}
+
+function getDiff($key, $arr1, $arr2)
+{
+    if (isset($arr1[$key]) && isset($arr2[$key])) {
+        return $arr1[$key] === $arr2[$key]
+            ? "    {$key}: " . toString($arr1[$key])
+            : "  - {$key}: " . toString($arr1[$key]) . "\n  + {$key}: " . toString($arr2[$key]);
+    } elseif (isset($arr1[$key])) {
+        return "  - {$key}: " . toString($arr1[$key]);
+    } else {
+        return "  - {$key}: " . toString($arr2[$key]);
+    }
 }
