@@ -1,3 +1,7 @@
 /vendor/
 /.vscode
-/files
+logs
+*.swo
+*.swp
+*.cache
+build
