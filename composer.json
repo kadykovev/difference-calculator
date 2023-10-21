@@ -23,6 +23,7 @@
     ],
     "require-dev": {
         "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "^10.4"
+        "phpunit/phpunit": "^10.4",
+        "phpstan/phpstan": "^1.10"
     }
 }

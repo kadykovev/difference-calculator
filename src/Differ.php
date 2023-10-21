@@ -2,33 +2,33 @@
 
 namespace Differ\Differ;
 
-function genDiff(string $firstFile, string $secondFile)
+function genDiff(string $firstFile, string $secondFile): string
 {
     $firstFilePath = realpath($firstFile);
     $secondFilePath = realpath($secondFile);
 
-    $firstFileContent = file_get_contents($firstFilePath);
-    $secondFileContent = file_get_contents($secondFilePath);
+    $firstFileContent = file_get_contents((string) $firstFilePath);
+    $secondFileContent = file_get_contents((string) $secondFilePath);
 
-    $firstFileArray = json_decode($firstFileContent, true);
-    $secondFileArray = json_decode($secondFileContent, true);
+    $firstFileArray = json_decode((string) $firstFileContent, true);
+    $secondFileArray = json_decode((string) $secondFileContent, true);
 
     $keys = array_unique(array_merge(array_keys($firstFileArray), array_keys($secondFileArray)));
     sort($keys);
 
     $result = array_map(function ($key) use ($firstFileArray, $secondFileArray) {
-        return getDiff($key, $firstFileArray, $secondFileArray);
+        return getDiff((string) $key, $firstFileArray, $secondFileArray);
     }, $keys);
 
     return "{\n" . implode("\n", $result) . "\n}";
 }
 
-function toString($value): string
+function toString(mixed $value): string
 {
     return $value === true ? "true" : ($value === false ? "false" : (string) $value);
 }
 
-function getDiff($key, $arr1, $arr2)
+function getDiff(string $key, array $arr1, array $arr2): string
 {
     if (isset($arr1[$key]) && isset($arr2[$key])) {
         return $arr1[$key] === $arr2[$key]
