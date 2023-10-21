@@ -20,7 +20,7 @@ function genDiff(string $firstFile, string $secondFile)
         return getDiff($key, $firstFileArray, $secondFileArray);
     }, $keys);
 
-    return "{\n" . implode("\n", $result) . "\n}\n";
+    return "{\n" . implode("\n", $result) . "\n}";
 }
 
 function toString($value): string
@@ -37,6 +37,6 @@ function getDiff($key, $arr1, $arr2)
     } elseif (isset($arr1[$key])) {
         return "  - {$key}: " . toString($arr1[$key]);
     } else {
-        return "  - {$key}: " . toString($arr2[$key]);
+        return "  + {$key}: " . toString($arr2[$key]);
     }
 }

@@ -18,5 +18,9 @@
     },
     "bin": [
         "bin/gendiff"
-    ]
+    ],
+    "require-dev": {
+        "squizlabs/php_codesniffer": "*",
+        "phpunit/phpunit": "^10.4"
+    }
 }
