@@ -1,6 +1,8 @@
 {
     "name": "hexlet/code",
+    "description": "The second project on the Hexlet educational platform",
     "type": "project",
+    "license": "MIT",
     "autoload": {
         "files": [
             "src/Differ.php"
