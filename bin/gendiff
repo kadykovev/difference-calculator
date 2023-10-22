@@ -33,5 +33,3 @@ $firstFile = $args->args['<firstFile>'];
 $secondFile = $args->args['<secondFile>'];
 
 echo genDiff($firstFile, $secondFile);
-
-//print_r($args);
