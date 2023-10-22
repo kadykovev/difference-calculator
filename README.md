@@ -7,3 +7,5 @@
 ## Compare two files
 ### Two json files
 <a href="https://asciinema.org/a/616139" target="_blank"><img src="https://asciinema.org/a/616139.svg" /></a>
+### Two yaml files
+<a href="https://asciinema.org/a/616383" target="_blank"><img src="https://asciinema.org/a/616383.svg" /></a>
