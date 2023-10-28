@@ -9,3 +9,5 @@
 <a href="https://asciinema.org/a/616139" target="_blank"><img src="https://asciinema.org/a/616139.svg" /></a>
 ### Two yaml files
 <a href="https://asciinema.org/a/616383" target="_blank"><img src="https://asciinema.org/a/616383.svg" /></a>
+### For two nested files in stylish format
+<a href="https://asciinema.org/a/617672" target="_blank"><img src="https://asciinema.org/a/617672.svg" /></a>
