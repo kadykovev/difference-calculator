@@ -15,7 +15,6 @@ function stylish(mixed $diff, int $count = 0, string $type = 'diff'): string
 
             if ($hasChildren) {
                 $acc .= getSpace($count + 1, $status) . $name . ": " . stylish($item['children'], $count + 1);
-                return $acc;
             } else {
                 if ($status === 'changed') {
                     $oldValue = $item['oldValue'];
@@ -30,11 +29,10 @@ function stylish(mixed $diff, int $count = 0, string $type = 'diff'): string
                     $type = gettype($item['value']);
                     $value = $item['value'];
                     $acc .= getSpace($count + 1, $status) . $name . ': ' . stylish($value, $count + 1, $type)  . "\n";
-                    return $acc;
                 }
-
-                return $acc;
             }
+
+            return $acc;
         });
 
         return "{\n" . $result . getSpace($count) . "}\n";
