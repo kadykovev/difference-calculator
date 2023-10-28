@@ -6,7 +6,8 @@
     "autoload": {
         "files": [
             "src/Differ.php",
-            "src/Parsers.php"
+            "src/Parsers.php",
+            "src/Formatters/Stylish.php"
         ] 
     },
     "authors": [

@@ -16,3 +16,16 @@ function parse(string $file): object
         return Yaml::parse($fileContent, Yaml::PARSE_OBJECT_FOR_MAP);
     }
 }
+
+
+//$recursiveFilesExpected = file_get_contents(__DIR__ . "/fixtures/recursiveFilesExpected.txt");
+
+/* $recursiveJSONFile1 = "/../tests/fixtures/recursiveFile1.json";
+$recursiveJSONFile2 = "/../tests/fixtures/recursiveFile2.json";
+
+$content = file_get_contents(__DIR__ . $recursiveJSONFile1);
+$vars = json_decode($content);
+//print_r($vars);
+
+print_r($arr = get_object_vars($vars)); */
+//print_r(array_keys($arr));
