@@ -3,18 +3,20 @@
 namespace Differ\Differ;
 
 use function Differ\Parser\parse;
-use function Differ\Formatters\Stylish\stylish;
+use function Differ\Formatters\format;
 
-function genDiff(string $firstFile, string $secondFile): string
+function genDiff(string $firstFile, string $secondFile, string $format = 'stylish'): string
 {
     $firstParsedFile = parse($firstFile);
     $secondParsedFile = parse($secondFile);
 
     $diff = getDiff($firstParsedFile, $secondParsedFile);
 
-    $result = stylish($diff);
-    return $result;
+    //$result = stylish($diff);
+    //return $result;
     //return $diff;
+
+    return format($diff, $format);
 }
 
 function getDiff(object $obj1, object $obj2): array
@@ -34,7 +36,7 @@ function getDiff(object $obj1, object $obj2): array
                 $status = 'unchanged';
                 $value = ['value' => $obj1->$key];
             } else {
-                $status = 'changed';
+                $status = 'updated';
                 $value = ['oldValue' => $obj1->$key, 'newValue' => $obj2->$key];
             }
         } elseif (property_exists($obj1, $key)) {

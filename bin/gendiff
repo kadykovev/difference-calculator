@@ -33,6 +33,6 @@ $firstFile = $args->args['<firstFile>'];
 $secondFile = $args->args['<secondFile>'];
 $format = $args->args['--format'];
 
-$diff = genDiff($firstFile, $secondFile, $format = 'stylish');
-//print_r($format);
+$diff = genDiff($firstFile, $secondFile, $format);
+print_r($args->args);
 print_r($diff);

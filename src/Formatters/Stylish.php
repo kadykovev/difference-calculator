@@ -15,7 +15,7 @@ function stylish(mixed $diff, int $count = 0): string
         if ($hasChildren) {
             $acc .= buildBefore($count + 1, $status) . $name . ": " . stylish($item['children'], $count + 1);
         } else {
-            if ($status === 'changed') {
+            if ($status === 'updated') {
                 $oldValue = $item['oldValue'];
                 $newValue = $item['newValue'];
                 $acc .= buildBefore($count + 1, 'removed') . $name . ': ' . displayValue($oldValue, $count + 1) . "\n";
@@ -67,7 +67,9 @@ function displayArray(array $arr, int $count): string
 
 function toString(mixed $value): string
 {
-     return trim(var_export($value, true), "'");
+     $value = trim(var_export($value, true), "'");
+
+     return $value === 'NULL' ? 'null' : $value;
 }
 
 function buildBefore(int $count, string $status = 'unchanged', string $replacer = ' ', int $spacesCount = 4): string
