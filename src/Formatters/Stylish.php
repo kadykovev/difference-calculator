@@ -4,54 +4,65 @@ namespace Differ\Formatters\Stylish;
 
 use function Functional\reduce_left;
 
-function stylish(mixed $diff, int $count = 0, string $type = 'diff'): string
+function stylish(mixed $diff, int $count = 0): string
 {
-    if ($type === 'diff') {
-        $result = array_reduce($diff, function ($acc, $item) use ($count) {
+    $result = array_reduce($diff, function ($acc, $item) use ($count) {
 
-            $name = $item['name'];
-            $status = $item['status'] ?? 'unchanged';
-            $hasChildren = isset($item['children']) ? true : false;
+        $name = $item['name'];
+        $status = $item['status'] ?? 'unchanged';
+        $hasChildren = isset($item['children']) ? true : false;
 
-            if ($hasChildren) {
-                $acc .= getSpace($count + 1, $status) . $name . ": " . stylish($item['children'], $count + 1);
+        if ($hasChildren) {
+            $acc .= getIndentAndSign($count + 1, $status) . $name . ": " . stylish($item['children'], $count + 1);
+        } else {
+            if ($status === 'changed') {
+                $oldValue = $item['oldValue'];
+                $newValue = $item['newValue'];
+                $acc .= getIndentAndSign($count + 1, 'removed') . $name . ': ' . displayValue($oldValue, $count + 1) . "\n";
+                $acc .= getIndentAndSign($count + 1, 'added') . $name . ': ' . displayValue($newValue, $count + 1) . "\n";
             } else {
-                if ($status === 'changed') {
-                    $oldValue = $item['oldValue'];
-                    $newValue = $item['newValue'];
-                    $oldValueType = gettype($item['oldValue']);
-                    $newValueType = gettype($item['newValue']);
-                    $acc .= getSpace($count + 1, 'removed') . $name . ': '
-                    . stylish($oldValue, $count + 1, $oldValueType) . "\n";
-                    $acc .= getSpace($count + 1, 'added') . $name . ': '
-                    . stylish($newValue, $count + 1, $newValueType) . "\n";
-                } else {
-                    $type = gettype($item['value']);
-                    $value = $item['value'];
-                    $acc .= getSpace($count + 1, $status) . $name . ': ' . stylish($value, $count + 1, $type)  . "\n";
-                }
+                $value = $item['value'];
+                $acc .= getIndentAndSign($count + 1, $status) . $name . ': ' . displayValue($value, $count + 1)  . "\n";
             }
+        }
 
-            return $acc;
-        });
+        return $acc;
+    });
 
-        return "{\n" . $result . getSpace($count) . "}\n";
-    } elseif ($type === 'object') {
-        $result = reduce_left((array) $diff, function ($value, $key, $collection, $acc) use ($count) {
-            $type = gettype($value);
-            $acc .= getSpace($count + 1) . $key . ": " . stylish($value, $count + 1, $type)  . "\n";
-            return $acc;
-        });
-        return "{\n" . $result .  getSpace($count) . "}";
+    return "{\n" . $result . getIndentAndSign($count) . "}\n";
+}
+
+function displayValue(mixed $value, int $count): string
+{
+    $type = gettype($value);
+
+    if ($type === 'object') {
+        return displayObject($value, $count);
     } elseif ($type === 'array') {
-        $result = array_reduce($diff, function ($acc, $item) use ($count) {
-            $acc .= getSpace($count + 1) . toString($item) . "\n";
-            return $acc;
-        });
-        return "[\n" . $result .  getSpace($count) . "]";
+        return displayArray($value, $count);
     } else {
-        return toString($diff);
+        return toString($value);
     }
+}
+
+function displayObject(object $obj, int $count): string
+{
+    $result = reduce_left((array) $obj, function ($value, $key, $collection, $acc) use ($count) {
+        $acc .= getIndentAndSign($count + 1) . $key . ": " . displayValue($value, $count + 1)  . "\n";
+        return $acc;
+    });
+
+    return "{\n" . $result .  getIndentAndSign($count) . "}";
+}
+
+function displayArray(array $arr, $count): string
+{
+    $result = array_reduce($arr, function ($acc, $item) use ($count) {
+        $acc .= getIndentAndSign($count + 1) . toString($item) . "\n";
+        return $acc;
+    });
+
+    return "[\n" . $result .  getIndentAndSign($count) . "]";
 }
 
 function toString(mixed $value): string
@@ -59,7 +70,7 @@ function toString(mixed $value): string
      return trim(var_export($value, true), "'");
 }
 
-function getSpace(int $count, string $status = 'unchanged', string $replacer = ' ', int $spacesCount = 4): string
+function getIndentAndSign($count, string $status = 'unchanged', string $replacer = ' ', int $spacesCount = 4): string
 {
     $space = '';
 
