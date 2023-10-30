@@ -13,23 +13,23 @@ function stylish(mixed $diff, int $count = 0): string
         $hasChildren = isset($item['children']) ? true : false;
 
         if ($hasChildren) {
-            $acc .= getIndentAndSign($count + 1, $status) . $name . ": " . stylish($item['children'], $count + 1);
+            $acc .= buildBefore($count + 1, $status) . $name . ": " . stylish($item['children'], $count + 1);
         } else {
             if ($status === 'changed') {
                 $oldValue = $item['oldValue'];
                 $newValue = $item['newValue'];
-                $acc .= getIndentAndSign($count + 1, 'removed') . $name . ': ' . displayValue($oldValue, $count + 1) . "\n";
-                $acc .= getIndentAndSign($count + 1, 'added') . $name . ': ' . displayValue($newValue, $count + 1) . "\n";
+                $acc .= buildBefore($count + 1, 'removed') . $name . ': ' . displayValue($oldValue, $count + 1) . "\n";
+                $acc .= buildBefore($count + 1, 'added') . $name . ': ' . displayValue($newValue, $count + 1) . "\n";
             } else {
                 $value = $item['value'];
-                $acc .= getIndentAndSign($count + 1, $status) . $name . ': ' . displayValue($value, $count + 1)  . "\n";
+                $acc .= buildBefore($count + 1, $status) . $name . ': ' . displayValue($value, $count + 1)  . "\n";
             }
         }
 
         return $acc;
     });
 
-    return "{\n" . $result . getIndentAndSign($count) . "}\n";
+    return "{\n" . $result . buildBefore($count) . "}\n";
 }
 
 function displayValue(mixed $value, int $count): string
@@ -48,21 +48,21 @@ function displayValue(mixed $value, int $count): string
 function displayObject(object $obj, int $count): string
 {
     $result = reduce_left((array) $obj, function ($value, $key, $collection, $acc) use ($count) {
-        $acc .= getIndentAndSign($count + 1) . $key . ": " . displayValue($value, $count + 1)  . "\n";
+        $acc .= buildBefore($count + 1) . $key . ": " . displayValue($value, $count + 1)  . "\n";
         return $acc;
     });
 
-    return "{\n" . $result .  getIndentAndSign($count) . "}";
+    return "{\n" . $result .  buildBefore($count) . "}";
 }
 
-function displayArray(array $arr, $count): string
+function displayArray(array $arr, int $count): string
 {
     $result = array_reduce($arr, function ($acc, $item) use ($count) {
-        $acc .= getIndentAndSign($count + 1) . toString($item) . "\n";
+        $acc .= buildBefore($count + 1) . toString($item) . "\n";
         return $acc;
     });
 
-    return "[\n" . $result .  getIndentAndSign($count) . "]";
+    return "[\n" . $result .  buildBefore($count) . "]";
 }
 
 function toString(mixed $value): string
@@ -70,21 +70,21 @@ function toString(mixed $value): string
      return trim(var_export($value, true), "'");
 }
 
-function getIndentAndSign($count, string $status = 'unchanged', string $replacer = ' ', int $spacesCount = 4): string
+function buildBefore(int $count, string $status = 'unchanged', string $replacer = ' ', int $spacesCount = 4): string
 {
-    $space = '';
+    $before = '';
 
     switch ($status) {
         case 'unchanged':
-            $space = str_repeat($replacer, $spacesCount * $count);
+            $before = str_repeat($replacer, $spacesCount * $count);
             break;
         case 'added':
-            $space = str_repeat($replacer, ($spacesCount * $count) - 2) . '+ ';
+            $before = str_repeat($replacer, ($spacesCount * $count) - 2) . '+ ';
             break;
         case 'removed':
-            $space = str_repeat($replacer, ($spacesCount * $count) - 2) . '- ';
+            $before = str_repeat($replacer, ($spacesCount * $count) - 2) . '- ';
             break;
     }
 
-    return $space;
+    return $before;
 }
