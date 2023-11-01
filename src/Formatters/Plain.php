@@ -18,13 +18,13 @@ function plain(array $diff, array $path = []): string
             $acc .= plain($children, $path);
         } else {
             if ($status === 'updated') {
-                $oldValue = displayValue($item['oldValue']);
-                $newValue = displayValue($item['newValue']);
+                $oldValue = getFormattedValue($item['oldValue']);
+                $newValue = getFormattedValue($item['newValue']);
                 $acc .= displayPath($path) . "' was updated. From " . $oldValue . " to " . $newValue . PHP_EOL;
             } else {
-                $value = $item['value'];
+                $value = getFormattedValue($item['value']);
                 if ($status === 'added') {
-                    $acc .= displayPath($path) . "' was added with value: " . displayValue($value) . PHP_EOL;
+                    $acc .= displayPath($path) . "' was added with value: " . $value . PHP_EOL;
                 } elseif ($status === 'removed') {
                     $acc .= displayPath($path) . "' was removed" . PHP_EOL;
                 }
@@ -35,7 +35,7 @@ function plain(array $diff, array $path = []): string
     });
 }
 
-function displayValue(mixed $value): string
+function getFormattedValue(mixed $value): string
 {
     $type = gettype($value);
 

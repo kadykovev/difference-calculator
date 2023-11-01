@@ -23,7 +23,7 @@ function getDiff(object $obj1, object $obj2): array
 {
     $keys = getKeys($obj1, $obj2);
 
-    $result = array_map(function ($key) use ($obj1, $obj2) {
+    return array_map(function ($key) use ($obj1, $obj2) {
 
         $children = [];
         $value = [];
@@ -49,8 +49,6 @@ function getDiff(object $obj1, object $obj2): array
 
         return array_merge(['name' => $key, 'status' => $status], $value, $children);
     }, $keys);
-
-    return $result;
 }
 
 function getKeys(object $obj1, object $obj2): array
