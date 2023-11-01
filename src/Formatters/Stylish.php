@@ -3,6 +3,7 @@
 namespace Differ\Formatters\Stylish;
 
 use function Functional\reduce_left;
+use function Differ\Formatters\toString;
 
 function stylish(mixed $diff, int $count = 0): string
 {
@@ -13,23 +14,24 @@ function stylish(mixed $diff, int $count = 0): string
         $hasChildren = isset($item['children']) ? true : false;
 
         if ($hasChildren) {
-            $acc .= buildBefore($count + 1, $status) . $name . ": " . stylish($item['children'], $count + 1);
+            $children = $item['children'];
+            $acc .= buildBefore($count + 1, $status) . $name . ": " . stylish($children, $count + 1);
         } else {
             if ($status === 'updated') {
-                $oldValue = $item['oldValue'];
-                $newValue = $item['newValue'];
-                $acc .= buildBefore($count + 1, 'removed') . $name . ': ' . displayValue($oldValue, $count + 1) . "\n";
-                $acc .= buildBefore($count + 1, 'added') . $name . ': ' . displayValue($newValue, $count + 1) . "\n";
+                $oldValue = displayValue($item['oldValue'], $count + 1);
+                $newValue = displayValue($item['newValue'], $count + 1);
+                $acc .= buildBefore($count + 1, 'removed') . $name . ': ' . $oldValue . PHP_EOL;
+                $acc .= buildBefore($count + 1, 'added') . $name . ': ' . $newValue . PHP_EOL;
             } else {
-                $value = $item['value'];
-                $acc .= buildBefore($count + 1, $status) . $name . ': ' . displayValue($value, $count + 1)  . "\n";
+                $value = displayValue($item['value'], $count + 1);
+                $acc .= buildBefore($count + 1, $status) . $name . ': ' . $value . PHP_EOL;
             }
         }
 
         return $acc;
     });
 
-    return "{\n" . $result . buildBefore($count) . "}\n";
+    return "{" . PHP_EOL . $result . buildBefore($count) . "}" . PHP_EOL;
 }
 
 function displayValue(mixed $value, int $count): string
@@ -48,28 +50,21 @@ function displayValue(mixed $value, int $count): string
 function displayObject(object $obj, int $count): string
 {
     $result = reduce_left((array) $obj, function ($value, $key, $collection, $acc) use ($count) {
-        $acc .= buildBefore($count + 1) . $key . ": " . displayValue($value, $count + 1)  . "\n";
+        $acc .= buildBefore($count + 1) . $key . ": " . displayValue($value, $count + 1) . PHP_EOL;
         return $acc;
     });
 
-    return "{\n" . $result .  buildBefore($count) . "}";
+    return "{" . PHP_EOL . $result .  buildBefore($count) . "}";
 }
 
 function displayArray(array $arr, int $count): string
 {
     $result = array_reduce($arr, function ($acc, $item) use ($count) {
-        $acc .= buildBefore($count + 1) . toString($item) . "\n";
+        $acc .= buildBefore($count + 1) . toString($item) . PHP_EOL;
         return $acc;
     });
 
-    return "[\n" . $result .  buildBefore($count) . "]";
-}
-
-function toString(mixed $value): string
-{
-     $value = trim(var_export($value, true), "'");
-
-     return $value === 'NULL' ? 'null' : $value;
+    return "[" . PHP_EOL . $result .  buildBefore($count) . "]";
 }
 
 function buildBefore(int $count, string $status = 'unchanged', string $replacer = ' ', int $spacesCount = 4): string

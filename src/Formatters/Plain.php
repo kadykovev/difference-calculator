@@ -2,30 +2,53 @@
 
 namespace Differ\Formatters\Plain;
 
-function plain(array $diff): string
+use function Differ\Formatters\toString;
+
+function plain(array $diff, array $path = []): string
 {
-/*     $result = array_reduce($diff, function ($acc, $item) {
+    return array_reduce($diff, function ($acc, $item) use ($path) {
 
         $name = $item['name'];
-        $status = $item['status'] ?? 'unchanged';
+        $status = $item['status'];
         $hasChildren = isset($item['children']) ? true : false;
+        $path[] = $name;
 
         if ($hasChildren) {
-            $acc .= ;
+            $children = $item['children'];
+            $acc .= plain($children, $path);
         } else {
             if ($status === 'updated') {
-                $oldValue = $item['oldValue'];
-                $newValue = $item['newValue'];
-                $acc .= buildBefore($count + 1, 'removed') . $name . ': ' . displayValue($oldValue, $count + 1) . "\n";
-                $acc .= buildBefore($count + 1, 'added') . $name . ': ' . displayValue($newValue, $count + 1) . "\n";
+                $oldValue = displayValue($item['oldValue']);
+                $newValue = displayValue($item['newValue']);
+                $acc .= displayPath($path) . "' was updated. From " . $oldValue . " to " . $newValue . PHP_EOL;
             } else {
                 $value = $item['value'];
-                $acc .= buildBefore($count + 1, $status) . $name . ': ' . displayValue($value, $count + 1)  . "\n";
+                if ($status === 'added') {
+                    $acc .= displayPath($path) . "' was added with value: " . displayValue($value) . PHP_EOL;
+                } elseif ($status === 'removed') {
+                    $acc .= displayPath($path) . "' was removed" . PHP_EOL;
+                }
             }
         }
 
         return $acc;
     });
+}
 
-    return "{\n" . $result . buildBefore($count) . "}\n"; */
+function displayValue(mixed $value): string
+{
+    $type = gettype($value);
+
+    if ($type === 'object' || $type === 'array') {
+        return '[complex value]';
+    } elseif ($type === 'string') {
+        return "'" . toString($value) . "'";
+    } else {
+        return toString($value);
+    }
+}
+
+function displayPath(array $path): string
+{
+    return "Property '" . implode('.', $path);
 }

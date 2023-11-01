@@ -7,9 +7,20 @@ use function Differ\Formatters\Plain\plain;
 
 function format(array $diff, string $format): string
 {
+    $result = '';
+
     if ($format === 'stylish') {
-        return stylish($diff);
+        $result = stylish($diff);
     } elseif ($format === 'plain') {
-        return plain($diff);
+        $result = plain($diff);
     }
+
+    return $result;
+}
+
+function toString(mixed $value): string
+{
+     $value = trim(var_export($value, true), "'");
+
+     return $value === 'NULL' ? 'null' : $value;
 }

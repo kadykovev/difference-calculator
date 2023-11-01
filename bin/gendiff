@@ -34,5 +34,5 @@ $secondFile = $args->args['<secondFile>'];
 $format = $args->args['--format'];
 
 $diff = genDiff($firstFile, $secondFile, $format);
-print_r($args->args);
+//print_r($args->args);
 print_r($diff);
