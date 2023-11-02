@@ -13,3 +13,5 @@
 <a href="https://asciinema.org/a/617672" target="_blank"><img src="https://asciinema.org/a/617672.svg" /></a>
 ### For two nested files in plain format
 <a href="https://asciinema.org/a/618487" target="_blank"><img src="https://asciinema.org/a/618487.svg" /></a>
+### For two nested files in json format
+<a href="https://asciinema.org/a/618834" target="_blank"><img src="https://asciinema.org/a/618834.svg" /></a>

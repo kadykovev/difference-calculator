@@ -7,16 +7,16 @@ use function Differ\Formatters\format;
 
 function genDiff(string $firstFile, string $secondFile, string $format = 'stylish'): string
 {
-    $firstParsedFile = parse($firstFile);
-    $secondParsedFile = parse($secondFile);
+    try {
+        $firstParsedFile = parse($firstFile);
+        $secondParsedFile = parse($secondFile);
+        $diff = getDiff($firstParsedFile, $secondParsedFile);
+        $result = format($diff, $format);
+    } catch (\Exception $e) {
+        echo $e->getMessage(), PHP_EOL;
+    }
 
-    $diff = getDiff($firstParsedFile, $secondParsedFile);
-
-    //$result = stylish($diff);
-    //return $result;
-    //return $diff;
-
-    return format($diff, $format);
+    return $result ?? '';
 }
 
 function getDiff(object $obj1, object $obj2): array
@@ -30,7 +30,7 @@ function getDiff(object $obj1, object $obj2): array
 
         if (property_exists($obj1, $key) && property_exists($obj2, $key)) {
             if (is_object($obj1->$key) && is_object($obj2->$key)) {
-                $status = 'unchanged';
+                $status = 'nested';
                 $children = ['children' => getDiff($obj1->$key, $obj2->$key)];
             } elseif ($obj1->$key === $obj2->$key) {
                 $status = 'unchanged';

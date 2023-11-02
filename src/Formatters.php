@@ -4,6 +4,7 @@ namespace Differ\Formatters;
 
 use function Differ\Formatters\Stylish\stylish;
 use function Differ\Formatters\Plain\plain;
+use function Differ\Formatters\Json\json;
 
 function format(array $diff, string $format): string
 {
@@ -13,14 +14,11 @@ function format(array $diff, string $format): string
         $result = stylish($diff);
     } elseif ($format === 'plain') {
         $result = plain($diff);
+    } elseif ($format === 'json') {
+        $result = json($diff);
+    } else {
+        throw new \Exception('Invalid format! Use "stylish", "plain" or "json"');
     }
 
     return $result;
-}
-
-function toString(mixed $value): string
-{
-     $value = trim(var_export($value, true), "'");
-
-     return $value === 'NULL' ? 'null' : $value;
 }

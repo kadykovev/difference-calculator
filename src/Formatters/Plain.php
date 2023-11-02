@@ -2,7 +2,7 @@
 
 namespace Differ\Formatters\Plain;
 
-use function Differ\Formatters\toString;
+use function Differ\Formatters\Stylish\toString;
 
 function plain(array $diff, array $path = []): string
 {

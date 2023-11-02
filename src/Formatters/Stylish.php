@@ -3,9 +3,8 @@
 namespace Differ\Formatters\Stylish;
 
 use function Functional\reduce_left;
-use function Differ\Formatters\toString;
 
-function stylish(mixed $diff, int $count = 0): string
+function stylish(array $diff, int $count = 0): string
 {
     $result = array_reduce($diff, function ($acc, $item) use ($count) {
 
@@ -74,17 +73,20 @@ function buildBefore(int $count, string $status = 'unchanged', string $replacer 
 {
     $before = '';
 
-    switch ($status) {
-        case 'unchanged':
-            $before = str_repeat($replacer, $spacesCount * $count);
-            break;
-        case 'added':
-            $before = str_repeat($replacer, ($spacesCount * $count) - 2) . '+ ';
-            break;
-        case 'removed':
-            $before = str_repeat($replacer, ($spacesCount * $count) - 2) . '- ';
-            break;
+    if ($status === 'nested' || $status === 'unchanged') {
+        $before = str_repeat($replacer, $spacesCount * $count);
+    } elseif ($status === 'added') {
+        $before = str_repeat($replacer, ($spacesCount * $count) - 2) . '+ ';
+    } elseif ($status = 'removed') {
+        $before = str_repeat($replacer, ($spacesCount * $count) - 2) . '- ';
     }
 
     return $before;
+}
+
+function toString(mixed $value): string
+{
+     $value = trim(var_export($value, true), "'");
+
+     return $value === 'NULL' ? 'null' : $value;
 }
