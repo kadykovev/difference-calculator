@@ -17,17 +17,17 @@ function plain(array $diff, array $path = []): string
             $children = $item['children'];
             $acc[] = plain($children, $path);
         } else {
-            $path = getFormattedPath($path);
+            $formattedPath = getFormattedPath($path);
             if ($status === 'updated') {
                 $oldValue = getFormattedValue($item['oldValue']);
                 $newValue = getFormattedValue($item['newValue']);
-                $acc[] = "{$path}' was updated. From {$oldValue} to {$newValue}";
+                $acc[] = "{$formattedPath}' was updated. From {$oldValue} to {$newValue}";
             } else {
                 $value = getFormattedValue($item['value']);
                 if ($status === 'added') {
-                    $acc[] = "{$path}' was added with value: {$value}";
+                    $acc[] = "{$formattedPath}' was added with value: {$value}";
                 } elseif ($status === 'removed') {
-                    $acc[] = "{$path}' was removed";
+                    $acc[] = "{$formattedPath}' was removed";
                 }
             }
         }

@@ -59,35 +59,32 @@ function stylish(array $diff): string
 function getFormattedValue(mixed $value, int $count): string
 {
     $type = gettype($value);
-    $formattedValue = '';
 
     if ($type === 'object') {
-        $formattedValue = getFormattedObject($value, $count);
+        return getFormattedObject($value, $count);
     } elseif ($type === 'array') {
-        $formattedValue = getFormattedArray($value, $count);
+        return getFormattedArray($value, $count);
     } else {
-        $formattedValue = toString($value);
+        return toString($value);
     }
-
-    return $formattedValue;
 }
 
 function getFormattedObject(object $obj, int $count): string
 {
-    $obj = (array) $obj;
+    $arr = (array) $obj;
     $beforeBracket = buildBefore($count);
 
-    $stylishObject = function ($obj, $count) {
+    $stylishObject = function ($arr, $count) {
         $result = array_map(function ($key, $value) use ($count) {
             $beforeKey = buildBefore($count);
             $formattedValue = getFormattedValue($value, $count);
             return sprintf("%s%s: %s", $beforeKey, $key, $formattedValue);
-        }, array_keys($obj), $obj);
+        }, array_keys($arr), $arr);
 
         return implode(PHP_EOL, $result);
     };
 
-    return sprintf("{%s%s%s%s}", PHP_EOL, $stylishObject($obj, $count + 1), PHP_EOL, $beforeBracket);
+    return sprintf("{%s%s%s%s}", PHP_EOL, $stylishObject($arr, $count + 1), PHP_EOL, $beforeBracket);
 }
 
 function getFormattedArray(array $arr, int $count): string
@@ -109,22 +106,16 @@ function getFormattedArray(array $arr, int $count): string
 
 function buildBefore(int $count, string $status = 'unchanged', string $replacer = ' ', int $spacesCount = 4): string
 {
-    $before = '';
-
     if ($status === 'nested' || $status === 'unchanged') {
-        $before = str_repeat($replacer, $spacesCount * $count);
+        return str_repeat($replacer, $spacesCount * $count);
     } elseif ($status === 'added') {
-        $before = str_repeat($replacer, ($spacesCount * $count) - 2) . '+ ';
-    } elseif ($status = 'removed') {
-        $before = str_repeat($replacer, ($spacesCount * $count) - 2) . '- ';
+        return str_repeat($replacer, ($spacesCount * $count) - 2) . '+ ';
+    } elseif ($status === 'removed') {
+        return str_repeat($replacer, ($spacesCount * $count) - 2) . '- ';
     }
-
-    return $before;
 }
 
 function toString(mixed $value): string
 {
-     $value = trim(var_export($value, true), "'");
-
-     return $value === 'NULL' ? 'null' : $value;
+    return $value === null ? 'null' : trim(var_export($value, true), "'");
 }

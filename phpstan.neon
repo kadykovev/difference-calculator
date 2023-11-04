@@ -1,3 +1,6 @@
+includes:
+  - vendor/hexlet/phpstan-fp/extension.neon
+
 parameters:
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false

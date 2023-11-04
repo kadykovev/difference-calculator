@@ -8,17 +8,13 @@ use function Differ\Formatters\Json\json;
 
 function format(array $diff, string $format): string
 {
-    $result = '';
-
     if ($format === 'stylish') {
-        $result = stylish($diff);
+        return stylish($diff);
     } elseif ($format === 'plain') {
-        $result = plain($diff);
+        return plain($diff);
     } elseif ($format === 'json') {
-        $result = json($diff);
+        return json($diff);
     } else {
         throw new \Exception('Invalid format! Use "stylish", "plain" or "json"');
     }
-
-    return $result;
 }

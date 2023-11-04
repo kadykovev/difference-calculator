@@ -9,9 +9,9 @@ Composer </br>
 PHP >= 8
 
 ## Description
-Difference Calculator is a program that determines the difference between two data structures.
-Supported formats are json and yaml;
-Output formats: stylish, plain and json.
+Difference Calculator is a program that determines the difference between two data structures. </br>
+Supported formats are json and yaml. </br>
+Output formats: stylish, plain and json. </br>
 
 ## Installation
 Clone the project: </br>
@@ -21,13 +21,13 @@ Go to the project directory: </br>
 Run the installation: </br>
 `make install` </br></br>
 
-#Examples
-## Comparing two files with plain data structures
+## Examples
+### Comparing two files with plain data structures
 ### Two json files
 <a href="https://asciinema.org/a/616139" target="_blank"><img src="https://asciinema.org/a/616139.svg" /></a>
 ### Two yaml files
 <a href="https://asciinema.org/a/616383" target="_blank"><img src="https://asciinema.org/a/616383.svg" /></a>
-##  Comparing two files with nested data structures
+### Comparing two files with nested data structures
 ### In stylish format
 <a href="https://asciinema.org/a/617672" target="_blank"><img src="https://asciinema.org/a/617672.svg" /></a>
 ### In plain format
