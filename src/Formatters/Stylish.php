@@ -2,35 +2,58 @@
 
 namespace Differ\Formatters\Stylish;
 
-use function Functional\reduce_left;
-
-function stylish(array $diff, int $count = 0): string
+function stylish(array $diff): string
 {
-    $result = array_reduce($diff, function ($acc, $item) use ($count) {
+    $stylish = function (array $diff, int $count = 0) use (&$stylish) {
 
-        $name = $item['name'];
-        $status = $item['status'] ?? 'unchanged';
-        $hasChildren = isset($item['children']) ? true : false;
+        $result = array_map(function ($item) use ($count, $stylish) {
 
-        if ($hasChildren) {
-            $children = $item['children'];
-            $acc .= buildBefore($count + 1, $status) . $name . ": " . stylish($children, $count + 1);
-        } else {
-            if ($status === 'updated') {
+            $name = $item['name'];
+            $status = $item['status'];
+            $hasChildren = isset($item['children']) ? true : false;
+
+            if ($hasChildren) {
+                $children = $item['children'];
+                $beforeName = buildBefore($count + 1, $status);
+                $beforeBracket = buildBefore($count + 1);
+                $internalLines = $stylish($children, $count + 1);
+                $lines = sprintf(
+                    "%s%s: {%s%s%s%s}",
+                    $beforeName,
+                    $name,
+                    PHP_EOL,
+                    $internalLines,
+                    PHP_EOL,
+                    $beforeBracket
+                );
+            } elseif ($status === 'updated') {
                 $oldValue = getFormattedValue($item['oldValue'], $count + 1);
                 $newValue = getFormattedValue($item['newValue'], $count + 1);
-                $acc .= buildBefore($count + 1, 'removed') . $name . ': ' . $oldValue . PHP_EOL;
-                $acc .= buildBefore($count + 1, 'added') . $name . ': ' . $newValue . PHP_EOL;
+                $beforeOldValue = buildBefore($count + 1, 'removed');
+                $beforeNewValue = buildBefore($count + 1, 'added');
+                $lines = sprintf(
+                    "%s%s: %s%s%s%s: %s",
+                    $beforeOldValue,
+                    $name,
+                    $oldValue,
+                    PHP_EOL,
+                    $beforeNewValue,
+                    $name,
+                    $newValue
+                );
             } else {
                 $value = getFormattedValue($item['value'], $count + 1);
-                $acc .= buildBefore($count + 1, $status) . $name . ': ' . $value . PHP_EOL;
+                $beforeName = buildBefore($count + 1, $status);
+                $lines = sprintf("%s%s: %s", $beforeName, $name, $value);
             }
-        }
 
-        return $acc;
-    });
+            return $lines;
+        }, $diff);
 
-    return "{" . PHP_EOL . $result . buildBefore($count) . "}" . PHP_EOL;
+        return implode(PHP_EOL, $result);
+    };
+
+    return sprintf("{%s%s%s}", PHP_EOL, $stylish($diff), PHP_EOL);
 }
 
 function getFormattedValue(mixed $value, int $count): string
@@ -51,22 +74,37 @@ function getFormattedValue(mixed $value, int $count): string
 
 function getFormattedObject(object $obj, int $count): string
 {
-    $result = reduce_left((array) $obj, function ($value, $key, $collection, $acc) use ($count) {
-        $acc .= buildBefore($count + 1) . $key . ": " . getFormattedValue($value, $count + 1) . PHP_EOL;
-        return $acc;
-    });
+    $obj = (array) $obj;
+    $beforeBracket = buildBefore($count);
 
-    return "{" . PHP_EOL . $result .  buildBefore($count) . "}";
+    $stylishObject = function ($obj, $count) {
+        $result = array_map(function ($key, $value) use ($count) {
+            $beforeKey = buildBefore($count);
+            $formattedValue = getFormattedValue($value, $count);
+            return sprintf("%s%s: %s", $beforeKey, $key, $formattedValue);
+        }, array_keys($obj), $obj);
+
+        return implode(PHP_EOL, $result);
+    };
+
+    return sprintf("{%s%s%s%s}", PHP_EOL, $stylishObject($obj, $count + 1), PHP_EOL, $beforeBracket);
 }
 
 function getFormattedArray(array $arr, int $count): string
 {
-    $result = array_reduce($arr, function ($acc, $item) use ($count) {
-        $acc .= buildBefore($count + 1) . toString($item) . PHP_EOL;
-        return $acc;
-    });
+    $beforeBracket = buildBefore($count);
 
-    return "[" . PHP_EOL . $result .  buildBefore($count) . "]";
+    $stylishArray = function ($arr, $count) {
+        $result = array_map(function ($value) use ($count) {
+            $beforeValue = buildBefore($count);
+            $formattedValue = getFormattedValue($value, $count);
+            return sprintf("%s%s", $beforeValue, $formattedValue);
+        }, $arr);
+
+        return implode(PHP_EOL, $result);
+    };
+
+    return sprintf("[%s%s%s%s]", PHP_EOL, $stylishArray($arr, $count + 1), PHP_EOL, $beforeBracket);
 }
 
 function buildBefore(int $count, string $status = 'unchanged', string $replacer = ' ', int $spacesCount = 4): string
