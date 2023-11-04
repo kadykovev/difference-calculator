@@ -21,7 +21,8 @@
     ],
     "require": {
         "docopt/docopt": "^1.0",
-        "symfony/yaml": "^6.3"
+        "symfony/yaml": "^6.3",
+        "lstrojny/functional-php": "^1.17"
     },
     "bin": [
         "bin/gendiff"

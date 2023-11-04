@@ -2,6 +2,9 @@ includes:
   - vendor/hexlet/phpstan-fp/extension.neon
 
 parameters:
+    phpstanFunctionalProgramming:
+        disallowClasses: false
+        disallowThrow: false
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
     level: 8

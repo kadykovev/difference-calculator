@@ -4,6 +4,7 @@ namespace Differ\Differ;
 
 use function Differ\Parser\parse;
 use function Differ\Formatters\format;
+use function Functional\sort;
 
 function genDiff(string $firstFile, string $secondFile, string $format = 'stylish'): string
 {
@@ -24,10 +25,6 @@ function getDiff(object $obj1, object $obj2): array
     $keys = getKeys($obj1, $obj2);
 
     return array_map(function ($key) use ($obj1, $obj2) {
-
-        $children = [];
-        $value = [];
-
         if (property_exists($obj1, $key) && property_exists($obj2, $key)) {
             if (is_object($obj1->$key) && is_object($obj2->$key)) {
                 $status = 'nested';
@@ -47,7 +44,7 @@ function getDiff(object $obj1, object $obj2): array
             $value = ['value' => $obj2->$key];
         }
 
-        return array_merge(['name' => $key, 'status' => $status], $value, $children);
+        return array_merge(['name' => $key, 'status' => $status], $value ?? [], $children ?? []);
     }, $keys);
 }
 
@@ -57,7 +54,7 @@ function getKeys(object $obj1, object $obj2): array
     $keysObj2 = array_keys((array) $obj2);
 
     $keys = array_unique(array_merge($keysObj1, $keysObj2));
-    sort($keys);
+    $sortedKeys = sort($keys, fn($left, $right) => $left <=> $right);
 
-    return $keys;
+    return $sortedKeys;
 }

@@ -106,13 +106,11 @@ function getFormattedArray(array $arr, int $count): string
 
 function buildBefore(int $count, string $status = 'unchanged', string $replacer = ' ', int $spacesCount = 4): string
 {
-    if ($status === 'nested' || $status === 'unchanged') {
-        return str_repeat($replacer, $spacesCount * $count);
-    } elseif ($status === 'added') {
-        return str_repeat($replacer, ($spacesCount * $count) - 2) . '+ ';
-    } elseif ($status === 'removed') {
-        return str_repeat($replacer, ($spacesCount * $count) - 2) . '- ';
-    }
+    $signs = ['added' => '+', 'removed' => '-'];
+    $sign = $signs[$status] ?? ' ';
+    $spaces = str_repeat($replacer, ($spacesCount * $count) - 2);
+
+    return sprintf("%s%s ", $spaces, $sign);
 }
 
 function toString(mixed $value): string
