@@ -28,12 +28,14 @@ class DifferTest extends TestCase
     }
 
     #[DataProvider('dataProvider')]
-    public function testPlainGenDiff(string $format, string $expectedFile, string $nested): void
+    public function testPlainGenDiff(string $format, string $expectedFile, string $dataStructure): void
     {
-        $jsonFile1 = $this->getFixtureFullPath("{$nested}File1.json");
-        $jsonFile2 = $this->getFixtureFullPath("{$nested}File2.json");
-        $yamlFile1 = $this->getFixtureFullPath("{$nested}File1.yml");
-        $yamlFile2 = $this->getFixtureFullPath("{$nested}File2.yml");
+
+
+        $jsonFile1 = $this->getFixtureFullPath("{$dataStructure}File1.json");
+        $jsonFile2 = $this->getFixtureFullPath("{$dataStructure}File2.json");
+        $yamlFile1 = $this->getFixtureFullPath("{$dataStructure}File1.yml");
+        $yamlFile2 = $this->getFixtureFullPath("{$dataStructure}File2.yml");
 
         $expected = file_get_contents($this->getFixtureFullPath($expectedFile));
         $this->assertEquals(genDiff($jsonFile1, $jsonFile2, $format), $expected);
