@@ -28,7 +28,7 @@ class DifferTest extends TestCase
     }
 
     #[DataProvider('dataProvider')]
-    public function testPlainGenDiff(string $format, string $expectedFile, string $dataStructure): void
+    public function testGenDiff(string $format, string $expectedFile, string $dataStructure): void
     {
 
 
